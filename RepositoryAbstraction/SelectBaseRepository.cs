@@ -49,9 +49,9 @@ namespace RepositoryAbstraction
             return Select(expression, includes);
         }
 
-        public bool Any(Expression<Func<T, bool>> predicate = null, params Expression<Func<T, object>>[] includes)
+        public bool Any(params Expression<Func<T, object>>[] includes)
         {
-            return QueryableSelect(predicate, includes).Any();
+            return QueryableSelect(includes).Any();
         }
 
         public MKey? Max<MKey>(Expression<Func<T, MKey>> selector) where MKey : struct
@@ -61,7 +61,7 @@ namespace RepositoryAbstraction
 
         public MKey? Max<MKey>(Expression<Func<T, bool>> predicate, Expression<Func<T, MKey>> selector) where MKey : struct
         {
-            if (!Any((p) => true))
+            if (!Any())
             {
                 return null;
             }

@@ -11,7 +11,7 @@ namespace RepositoryAbstraction
     public interface ISelectRepository<T, TKey> : IDisposable where T: IIdentityEntity<TKey> where TKey: struct
     {
         T SingleOrDefault(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes);
-        bool Any(Expression<Func<T, bool>> predicate = null, params Expression<Func<T, object>>[] includes);
+        bool Any(params Expression<Func<T, object>>[] includes);
         IEnumerable<T> Select(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes);
         IEnumerable<T> Select(IEnumerable<TKey> collection, params Expression<Func<T, object>>[] includes);
         IEnumerable<T> Select(ISpecification specification, params Expression<Func<T, object>>[] includes);

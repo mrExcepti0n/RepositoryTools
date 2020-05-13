@@ -21,7 +21,7 @@ namespace RepositoryEF
 
         public override void Dispose()
         {
-            throw new NotImplementedException();
+            DataContext.Dispose();
         }
 
         public override IQueryable<T> QueryableSelect(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
