@@ -7,9 +7,9 @@ using System.Linq.Expressions;
 
 namespace RepositoryEF
 {
-    public class SelectRepository<T, TKey> : SelectBaseRepository<T, TKey> where T : class, IIdentityEntity<TKey> where TKey : struct
+    public class ReadRepository<T, TKey> : ReadBaseRepository<T, TKey> where T : class, IIdentityEntity<TKey> where TKey : struct
     {
-        protected SelectRepository(DbContext dbContext)
+        protected ReadRepository(DbContext dbContext)
         {
             _dataContext = dbContext;
         }

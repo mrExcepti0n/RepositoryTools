@@ -8,4 +8,8 @@
     <ProjectReference Include="..\BaseEntities\BaseEntities.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Tables\" />
+  </ItemGroup>
+
 </Project>

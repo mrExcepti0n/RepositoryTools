@@ -8,7 +8,7 @@ using System.Text;
 
 namespace RepositoryAbstraction
 {
-    public interface ISelectRepository<T, TKey> : IDisposable where T: IIdentityEntity<TKey> where TKey: struct
+    public interface IReadRepository<T, TKey> : IDisposable where T: IIdentityEntity<TKey> where TKey: struct
     {
         T SingleOrDefault(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes);
         bool Any(params Expression<Func<T, object>>[] includes);

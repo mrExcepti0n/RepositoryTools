@@ -8,7 +8,7 @@ using System.Text;
 
 namespace RepositoryAbstraction
 {
-    public abstract class SelectBaseRepository<T, TKey> : ISelectRepository<T, TKey> where T : class, IIdentityEntity<TKey> where TKey : struct
+    public abstract class ReadBaseRepository<T, TKey> : IReadRepository<T, TKey> where T : class, IIdentityEntity<TKey> where TKey : struct
     {
         public IQueryable<T> QueryableSelect(params Expression<Func<T, object>>[] includes)
         {

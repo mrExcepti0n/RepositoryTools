@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace RepositoryEF.UnitTests
 {
     [TestClass]
-    public class SelectRepositoryTest : EntityFrameworkIntegrationBaseTest
+    public class ReadRepositoryTest : EntityFrameworkIntegrationBaseTest
     {
         [TestMethod]
         public void Any_EmptyCollection_ReturnsFalse()

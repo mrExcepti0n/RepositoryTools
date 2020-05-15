@@ -16,5 +16,7 @@ namespace RepositoryEF.UnitTests.Model
       
 
         public string Number { get; set; }
+
+        public DateTime Date { get; set; }
     }
 }

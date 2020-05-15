@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace RepositoryEF.UnitTests.Infrastructure
 {
-    public class AgreementRepository : ReadRepository<Agreement, int>
+    public class AgreementWriteRepository : WriteRepository<Agreement, int>
     {
-        public AgreementRepository(DbContext dbContext) : base(dbContext)
+        public AgreementWriteRepository(DbContext dbContext) : base(dbContext)
         {
         }
     }
