@@ -7,20 +7,20 @@ using System.Text;
 
 namespace RepositoryAbstraction
 {
-    public class WriteTrackingEnityRepository<T, TKey> : IWriteRepository<T, TKey> where T : class, ITable<TKey>,  new() where TKey : struct
+    public class WriteTrackingEntityRepository<T, TKey> : IWriteRepository<T, TKey> where T : class, ITable<TKey>,  new() where TKey : struct
     {
-        public WriteTrackingEnityRepository(WriteBaseRepository<T, TKey> repository, IIdentityProvider identityProvider)
+        public WriteTrackingEntityRepository(WriteBaseRepository<T, TKey> repository, IIdentityProvider identityProvider)
         {
             _repository = repository;
             _isPhysicalDelete = false;
             _identityProvider = identityProvider;
         }
         
-        private IIdentityProvider _identityProvider;
-        private WriteBaseRepository<T, TKey> _repository;
-        private bool _isPhysicalDelete;
+        private readonly IIdentityProvider _identityProvider;
+        private readonly WriteBaseRepository<T, TKey> _repository;
+        private readonly bool _isPhysicalDelete;
 
-        private void ApplayUpdateDate(IEnumerable<IChangeDate> entityCollection)
+        private void ApplyUpdateDate(IEnumerable<IChangeDate> entityCollection)
         {
             var dateTimeNow = DateTime.Now;
             foreach (var element in entityCollection)
@@ -29,7 +29,7 @@ namespace RepositoryAbstraction
             }
         }
 
-        private void ApplayWorkerChangers(IEnumerable<IChangedBy> entityCollection)
+        private void ApplyWorkerChangers(IEnumerable<IChangedBy> entityCollection)
         {
             foreach (IChangedBy element in entityCollection)
             {
@@ -39,14 +39,16 @@ namespace RepositoryAbstraction
 
         private int SoftDelete(IEnumerable<T> entities)
         {
-            ApplayUpdateDate(entities);
-            ApplayWorkerChangers(entities);
-            foreach (var element in entities)
+            var entityCollection = entities.ToList();
+
+            ApplyUpdateDate(entityCollection);
+            ApplyWorkerChangers(entityCollection);
+            foreach (var element in entityCollection)
             {
                 element.IsDeleted = true;
             }
 
-            return entities.Count();
+            return entityCollection.Count;
         }
 
 
@@ -57,13 +59,18 @@ namespace RepositoryAbstraction
 
         public void Add(IEnumerable<T> entities)
         {
-            ApplayUpdateDate(entities);
-            ApplayWorkerChangers(entities);
-            _repository.Add(entities);
+            var entityCollection = entities.ToList();
+
+            ApplyUpdateDate(entityCollection);
+            ApplyWorkerChangers(entityCollection);
+            _repository.Add(entityCollection);
         }
 
-        public void BulkInsert(IEnumerable<T> entityCollection, int? batchSize = 50000, int? commandTimeout = 300, BulkCopyOptions? bulkCopyOptions = BulkCopyOptions.Default)
+        public void BulkInsert(IEnumerable<T> entities, int? batchSize = 50000, int? commandTimeout = 300, BulkCopyOptions? bulkCopyOptions = BulkCopyOptions.Default)
         {
+            var entityCollection = entities.ToList();
+            ApplyUpdateDate(entityCollection);
+            ApplyWorkerChangers(entityCollection);
             _repository.BulkInsert(entityCollection, batchSize, commandTimeout, bulkCopyOptions);
         }
 
@@ -74,18 +81,9 @@ namespace RepositoryAbstraction
 
         public int Delete(IEnumerable<T> entities)
         {
-            if (!_isPhysicalDelete)
-            {
-                return _repository.Delete(entities);
-            }
-
-            return SoftDelete(entities);
+            return _isPhysicalDelete ? _repository.Delete(entities) : SoftDelete(entities);
         }
 
-        public int Delete(IQueryable<T> entity)
-        {
-            throw new NotImplementedException();
-        }
 
         public int Delete(Expression<Func<T, bool>> expression)
         {
@@ -99,9 +97,10 @@ namespace RepositoryAbstraction
 
         public int DeleteById(List<TKey> idCollection)
         {
-            throw new NotImplementedException();
+            return Delete(entity => idCollection.Contains(entity.Id));
         }
 
+        //TODO move save changes to unit of work, and rewrite apply entity fields logic to avoid overfilling
         public virtual int SaveChanges()
         {
             return _repository.SaveChanges();
@@ -121,9 +120,5 @@ namespace RepositoryAbstraction
             return _repository.Update(getExpression, newUpdateExpression);
         }
 
-        public int Update(IQueryable<T> query, Expression<Func<T, T>> updateExpression)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

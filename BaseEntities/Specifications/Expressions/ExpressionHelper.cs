@@ -4,18 +4,8 @@ using System.Reflection;
 
 namespace BaseEntities.Specifications.Expressions
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public static class ExpressionHelper
     {
-        /// <summary>
-        /// Преобразовать выражение
-        /// </summary>
-        /// <typeparam name="TCandidate"></typeparam>
-        /// <typeparam name="TSource"></typeparam>
-        /// <param name="sourceExpression"></param>
-        /// <returns></returns>
         public static Expression<Func<TCandidate, bool>> ConvertQueryExpression<TCandidate, TSource>(Expression<Func<TSource, bool>> sourceExpression)
         {
             var correctParameter = Expression.Parameter(

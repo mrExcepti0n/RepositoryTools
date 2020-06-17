@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RepositoryEF.UnitTests.Helpers;
+using RepositoryEF.UnitTests.Specifications;
 
 namespace RepositoryEF.UnitTests
 {
@@ -23,5 +25,21 @@ namespace RepositoryEF.UnitTests
                 Assert.AreEqual(expected, result);
             }
         }
+
+        [TestMethod]
+        public void SelectWithSpecification_EmptyCollection_ReturnsFalse()
+        {
+            string number = "12-xx-78";
+            Agreement agreement = TestDbContextHelper.AddAgreement(number);
+
+            using (var repository = new AgreementRepository(new TestDbContext()))
+            {
+                var specification = new NumberSpecification(number);
+                var result = repository.Select(specification);
+
+                Assert.IsNotNull(result);
+            }
+        }
+
     }
 }

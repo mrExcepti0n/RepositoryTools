@@ -7,17 +7,10 @@ using BaseEntities.Specifications.Expressions;
 
 namespace BaseEntities.Specifications
 {
-    /// <summary>
-    ///     Логика объединения ИЛИ для нескольких спецификаций
-    /// </summary>
     [DataContract]
     public class CompositeOrSpecification : CompositeSpecification
     {
-        #region Fields And Properties
 
-        /// <summary>
-        ///     Спецификации для объединения
-        /// </summary>
         [DataMember(IsRequired = true)]
         public Specification[] Members
         {
@@ -33,30 +26,12 @@ namespace BaseEntities.Specifications
             }
         }
 
-        #endregion
 
-        /// <summary>
-        /// Конструктор
-        /// </summary>
-        [Obsolete("Не использовать, только для WCF")]
-        public CompositeOrSpecification()
-        {
-        }
-        /// <summary>
-        /// Конструктор
-        /// </summary>
-        /// <param name="members"></param>
         public CompositeOrSpecification(params Specification[] members)
         {
             Members = members;
         }
 
-        /// <summary>
-        /// Предикат ИЛИ
-        /// </summary>
-        /// <typeparam name="TCandidate"></typeparam>
-        /// <param name="expressions"></param>
-        /// <returns></returns>
         public static Expression<Func<TCandidate, bool>> Or<TCandidate>(params Expression<Func<TCandidate, bool>>[] expressions)
         {
             if (expressions == null)
@@ -64,12 +39,7 @@ namespace BaseEntities.Specifications
 
             return Or(expressions as IEnumerable<Expression<Func<TCandidate, bool>>>);
         }
-        /// <summary>
-        /// Предикат ИЛИ
-        /// </summary>
-        /// <typeparam name="TCandidate"></typeparam>
-        /// <param name="expressions"></param>
-        /// <returns></returns>
+
         public static Expression<Func<TCandidate, bool>> Or<TCandidate>(IEnumerable<Expression<Func<TCandidate, bool>>> expressions)
         {
             if (expressions == null)
@@ -89,15 +59,9 @@ namespace BaseEntities.Specifications
             return resultExpression;
         }
 
-
-        #region Overrides of CompositeSpecification
-
-        /// <inheritdoc />
         protected override Expression<Func<TCandidate, bool>> Combine<TCandidate>(IEnumerable<Expression<Func<TCandidate, bool>>> expressions)
         {
             return Or(expressions);
         }
-
-        #endregion
     }
 }

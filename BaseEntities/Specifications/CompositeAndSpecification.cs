@@ -7,18 +7,9 @@ using BaseEntities.Specifications.Expressions;
 
 namespace BaseEntities.Specifications
 {
-    /// <summary>
-    ///     Логика объединения И для нескольких спецификаций
-    /// </summary>
     [DataContract]
     public class CompositeAndSpecification : CompositeSpecification
     {
-        #region Fields And Properties
-
-        /// <summary>
-        ///     Спецификации для объединения
-        /// </summary>
-        /// <exception cref="ArgumentNullException"></exception>
         [DataMember(IsRequired = true)]
         public Specification[] Members
         {
@@ -34,22 +25,12 @@ namespace BaseEntities.Specifications
             }
         }
 
-        #endregion
 
-        /// <summary>
-        /// Конструктор
-        /// </summary>
-        /// <param name="members"></param>
         public CompositeAndSpecification(params Specification[] members)
         {
             Members = members;
         }
-        /// <summary>
-        /// Предикат объединения
-        /// </summary>
-        /// <typeparam name="TCandidate"></typeparam>
-        /// <param name="expressions"></param>
-        /// <returns></returns>
+
         public static Expression<Func<TCandidate, bool>> And<TCandidate>(params Expression<Func<TCandidate, bool>>[] expressions)
         {
             if (expressions == null)
@@ -57,12 +38,7 @@ namespace BaseEntities.Specifications
 
             return And(expressions as IEnumerable<Expression<Func<TCandidate, bool>>>);
         }
-        /// <summary>
-        /// Предикат объединения
-        /// </summary>
-        /// <typeparam name="TCandidate"></typeparam>
-        /// <param name="expressions"></param>
-        /// <returns></returns>
+
         public static Expression<Func<TCandidate, bool>> And<TCandidate>(IEnumerable<Expression<Func<TCandidate, bool>>> expressions)
         {
             if (expressions == null)
@@ -82,15 +58,9 @@ namespace BaseEntities.Specifications
             return resultExpression;
         }
 
-
-        #region Overrides of CompositeSpecification
-
-        /// <inheritdoc />
         protected override Expression<Func<TCandidate, bool>> Combine<TCandidate>(IEnumerable<Expression<Func<TCandidate, bool>>> expressions)
         {
             return And(Components.Select(component => component.GetSatisfiedExpression<TCandidate>()));
         }
-
-        #endregion
     }
 }

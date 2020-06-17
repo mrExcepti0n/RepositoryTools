@@ -10,7 +10,7 @@ namespace RepositoryEF.UnitTests
         [AssemblyInitialize]
         public static void AssemblySetup(TestContext context)
         {
-            DatbaseInitializationTools.InitAndFillDatabases();
+            DatabaseInitializationTools.InitAndFillDatabases();
         }
 
 
@@ -19,7 +19,7 @@ namespace RepositoryEF.UnitTests
         [AssemblyCleanup]
         public static void AssemblyCleanup()
         {
-            DatbaseInitializationTools.RemoveDatabases();
+            DatabaseInitializationTools.RemoveDatabases();
         }
     }
 }

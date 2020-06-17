@@ -1,11 +1,5 @@
-﻿using RepositoryAbstraction;
-using RepositoryEF.UnitTests.Model;
-using System;
-using System.Collections.Generic;
+﻿using RepositoryEF.UnitTests.Model;
 using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RepositoryEF.UnitTests.Infrastructure
 {

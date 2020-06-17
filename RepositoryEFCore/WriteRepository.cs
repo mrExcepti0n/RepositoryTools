@@ -1,16 +1,14 @@
-﻿using BaseEntities.Interfaces;
-using RepositoryAbstraction;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
-using EntityFramework.BulkInsert.Extensions;
-using RepositoryEF.Extensions;
-using Z.EntityFramework.Plus;
+using BaseEntities.Interfaces;
+using EFCore.BulkExtensions;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using RepositoryAbstraction;
 
-namespace RepositoryEF
+namespace RepositoryEFCore
 {
     public class WriteRepository<T, TKey> : WriteBaseRepository<T, TKey> where T : class, IIdentityEntity<TKey>, new() where TKey : struct
     {
@@ -22,39 +20,28 @@ namespace RepositoryEF
         private readonly DbContext _dbContext;
         internal DbSet<T> DbSet => _dbContext.Set<T>();
 
+
+        //TODO needs check transaction 
         public override void BulkInsert(IEnumerable<T> entityCollection, int? batchSize = 50000, int? commandTimeout = 300, BulkCopyOptions? bulkCopyOptions = BulkCopyOptions.Default)
         {
             var collection = entityCollection as T[] ?? entityCollection.ToArray();
 
-            DbContextTransaction tran = _dbContext.Database.CurrentTransaction;
-
-            SqlBulkCopyOptions sqlBulkCopyOptions = bulkCopyOptions == null
-                ? SqlBulkCopyOptions.Default
-                : (SqlBulkCopyOptions)(int)bulkCopyOptions.Value;
-
-            var bulkInsertOptions = new BulkInsertOptions
+            _dbContext.BulkInsert(collection, config =>
             {
-                BatchSize = batchSize ?? 5000,
-                TimeOut = commandTimeout ?? 30,
-                SqlBulkCopyOptions = sqlBulkCopyOptions
-            };
-
-            if (tran != null)
-            {
-                _dbContext.BulkInsert(collection, _dbContext.Database.CurrentTransaction.UnderlyingTransaction, bulkInsertOptions);
-            }
-            else
-            {
-                _dbContext.BulkInsert(collection, bulkInsertOptions);
-            }
+                config.SetOutputIdentity = true;
+                config.BulkCopyTimeout = commandTimeout;
+                config.BatchSize = batchSize ?? config.BatchSize;
+                if (bulkCopyOptions != null) 
+                    config.SqlBulkCopyOptions = (SqlBulkCopyOptions) bulkCopyOptions;
+            });
         }
 
 
         public override int Delete(IEnumerable<T> entities)
         {
-            var removed = DbSet.RemoveRange(entities);
-
-            return removed.Count();
+            var collection = entities.ToList();
+            DbSet.RemoveRange(collection);
+            return collection.Count();
         }
 
         public override int Delete(Expression<Func<T, bool>> expression)
@@ -74,7 +61,9 @@ namespace RepositoryEF
 
         public override int Update(Expression<Func<T, bool>> getExpression, Expression<Func<T, T>> updateExpression)
         {
-            return DbSet.Where(getExpression).Update(updateExpression);
+            IQueryable<T> query = DbSet.Where(getExpression);
+
+            return query.BatchUpdate(updateExpression);
         }
 
         public override void Add(IEnumerable<T> entities)

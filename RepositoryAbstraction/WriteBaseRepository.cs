@@ -8,7 +8,7 @@ namespace RepositoryAbstraction
 {
     public abstract class WriteBaseRepository<T, TKey> : IWriteRepository<T, TKey> where T : class, new() where TKey : struct
     {
-        public WriteBaseRepository()
+        protected WriteBaseRepository()
         {
         }
      
@@ -31,8 +31,6 @@ namespace RepositoryAbstraction
 
         public abstract int Delete(IEnumerable<T> entity);
 
-        public abstract int Delete(IQueryable<T> entity);
-
         public abstract int Delete(Expression<Func<T, bool>> expression);
 
         public abstract int DeleteById(List<TKey> idCollection);
@@ -41,6 +39,5 @@ namespace RepositoryAbstraction
 
         public abstract int Update(Expression<Func<T, bool>> getExpression, Expression<Func<T, T>> updateExpression);
 
-        public abstract int Update(IQueryable<T> query, Expression<Func<T, T>> updateExpression);
     }
 }

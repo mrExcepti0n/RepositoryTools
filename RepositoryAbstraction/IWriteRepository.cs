@@ -17,14 +17,12 @@ namespace RepositoryAbstraction
 
         int Update(Expression<Func<T, bool>> getExpression, Expression<Func<T, T>> updateExpression);
 
-        int Update(IQueryable<T> query, Expression<Func<T, T>> updateExpression);
 
         int SaveChanges();
 
         int Delete(T entity);
 
         int Delete(IEnumerable<T> entity);
-        int Delete(IQueryable<T> entity);
 
         int Delete(Expression<Func<T, bool>> expression);
 

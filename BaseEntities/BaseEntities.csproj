@@ -10,8 +10,4 @@
     <None Remove="Re\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Specifications\" />
-  </ItemGroup>
-
 </Project>

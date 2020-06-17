@@ -6,10 +6,10 @@ using System.Text;
 
 namespace RepositoryAbstraction
 {
-    public interface ITemporaryWriteRepository
+    public interface ITemporaryTableRepository
     {
 
-        void BulkInsertInTempTable<T>(IEnumerable<T> entityCollection) where T : class;
+        IQueryable<T> BulkInsertInTempTable<T>(IEnumerable<T> entityCollection) where T : class;
 
         IQueryable<TemporaryIntIdentity> BulkInsertInTempTable(IEnumerable<int> entityCollection);
         IQueryable<TemporaryGuidIdentity> BulkInsertInTempTable(IEnumerable<Guid> entityCollection);

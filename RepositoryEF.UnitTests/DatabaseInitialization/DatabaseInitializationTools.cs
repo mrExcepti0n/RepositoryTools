@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace RepositoryEF.UnitTests.DatabaseInitialization
 {
-    public static class DatbaseInitializationTools
+    public static class DatabaseInitializationTools
     {
         public static void InitAndFillDatabases()
         {

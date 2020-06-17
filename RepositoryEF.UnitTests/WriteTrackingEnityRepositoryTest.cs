@@ -4,37 +4,34 @@ using RepositoryAbstraction;
 using RepositoryEF.UnitTests.Infrastructure;
 using RepositoryEF.UnitTests.Model;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RepositoryEF.UnitTests
 {
 
     [TestClass]
-    public class WriteTrackingEnityRepositoryTest: EntityFrameworkIntegrationBaseTest
+    public class WriteTrackingEntityRepositoryTest: EntityFrameworkIntegrationBaseTest
     {
         [TestMethod]
         public void Update_InsertOneAgreementThenUpdate_SetChangeDateAndChangedBy()
         {
-            var aggrement = new Agreement { Date = new DateTime(2020, 05, 01), Number = "1" };
+            var agreement = new Agreement { Date = new DateTime(2020, 05, 01), Number = "1" };
             using (var dbContext = new TestDbContext())
             {
                 var repository = new AgreementWriteRepository(dbContext);
 
-                repository.Add(aggrement);
+                repository.Add(agreement);
                 repository.SaveChanges();
                 var identityProvider = new Mock<IIdentityProvider>();
                 identityProvider.Setup(a => a.User).Returns("TestUser");
 
-                var writeTrackingEntityRepository = new WriteTrackingEnityRepository<Agreement, int>(repository, identityProvider.Object);
-                writeTrackingEntityRepository.Update(a => a.Id == aggrement.Id, a => new Agreement { Number = "123" });
+                var writeTrackingEntityRepository = new WriteTrackingEntityRepository<Agreement, int>(repository, identityProvider.Object);
+                writeTrackingEntityRepository.Update(a => a.Id == agreement.Id, a => new Agreement { Number = "123" });
             }
 
             using (var dbContext = new TestDbContext())
             {
-                var updatedAgreement = dbContext.Set<Agreement>().Single(a => a.Id == aggrement.Id);
+                var updatedAgreement = dbContext.Set<Agreement>().Single(a => a.Id == agreement.Id);
 
                 Assert.AreEqual("TestUser", updatedAgreement.ChangedBy);
                 Assert.IsNotNull(updatedAgreement.ChangeDate);
@@ -42,27 +39,26 @@ namespace RepositoryEF.UnitTests
             }
         }
 
-
         [TestMethod]
         public void DeleteByExpression_InsetOneThenSoftDelete_SetIsDeleted()
         {
-            var aggrement = new Agreement { Date = new DateTime(2020, 05, 01), Number = "1" };
+            var agreement = new Agreement { Date = new DateTime(2020, 05, 01), Number = "1" };
             using (var dbContext = new TestDbContext())
             {
                 var repository = new AgreementWriteRepository(dbContext);
 
-                repository.Add(aggrement);
+                repository.Add(agreement);
                 repository.SaveChanges();
                 var identityProvider = new Mock<IIdentityProvider>();
                 identityProvider.Setup(a => a.User).Returns("TestUser");
 
-                var writeTrackingEntityRepository = new WriteTrackingEnityRepository<Agreement, int>(repository, identityProvider.Object);
-                writeTrackingEntityRepository.Delete(a => a.Id == aggrement.Id);
+                var writeTrackingEntityRepository = new WriteTrackingEntityRepository<Agreement, int>(repository, identityProvider.Object);
+                writeTrackingEntityRepository.Delete(a => a.Id == agreement.Id);
             }
 
             using (var dbContext = new TestDbContext())
             {
-                var updatedAgreement = dbContext.Set<Agreement>().Single(a => a.Id == aggrement.Id);
+                var updatedAgreement = dbContext.Set<Agreement>().Single(a => a.Id == agreement.Id);
                 Assert.IsTrue(updatedAgreement.IsDeleted);
             }
         }
